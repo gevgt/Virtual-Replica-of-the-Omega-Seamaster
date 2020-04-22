@@ -1,0 +1,124 @@
+import numpy as np
+import math
+from matplotlib import pyplot as plt
+import matplotlib.patches as patches
+import os
+import time as t
+
+# Works in Spyder
+
+def rotation(d):
+    r = np.array([[math.cos(d), math.sin(d)], 
+                   [-math.sin(d), math.cos(d)]])
+    return r
+
+def plot(sekX, sekY, minX, minY, stdX, stdY):
+    fig, ax = plt.subplots(figsize=(4, 4))
+    
+    
+    for l in np.arange(0, 2, 2/12):
+        init = np.concatenate((np.zeros((2,1)), np.array([0,1]).reshape(2,1)), axis=1)
+        ticks = np.matmul(rotation(l*math.pi), 1.3*init[:,1].reshape(2,1))
+        if l == 0:
+            plt.scatter(ticks[0], ticks[1], color="#D5AE84", marker = "v", linewidth=5, zorder=2)
+            plt.annotate("12", (ticks[0], ticks[1]),
+                     textcoords="offset points", xytext=(0,-22), ha='center', 
+                     fontsize=20, weight="bold", color="white", zorder=2)
+            plt.annotate("Ω", (ticks[0], ticks[1]),
+                     textcoords="offset points", xytext=(0,-40), ha='center', 
+                     fontsize=15, color="white", zorder=2)
+            plt.annotate("OMEGA", (ticks[0], ticks[1]),
+                     textcoords="offset points", xytext=(0,-51), ha='center', 
+                     fontsize=10, color="white", zorder=2)
+            plt.annotate('$\it{Seamaster}$', (ticks[0], ticks[1]),
+                     textcoords="offset points", xytext=(0,-60), ha='center', 
+                     fontsize=10, color="#D5AE84", zorder=2)
+        elif l == 0.5:
+            plt.scatter(ticks[0], ticks[1], color="#D5AE84", marker = "<", linewidth=5, zorder=2)
+            plt.annotate("3", (ticks[0], ticks[1]),
+                     textcoords="offset points", xytext=(-15,-5), ha='center', 
+                     fontsize=20, weight="bold", color="white", zorder=2)
+        elif l == 1:
+            plt.scatter(ticks[0], ticks[1], color="#D5AE84", marker = "^", linewidth=5, zorder=2)
+            plt.annotate("SWISS", (ticks[0], ticks[1]),
+                     textcoords="offset points", xytext=(-15,-5), ha='center', 
+                     fontsize=4.5, color="white", zorder=2, rotation=-10)
+            plt.annotate("MADE", (ticks[0], ticks[1]),
+                     textcoords="offset points", xytext=(15,-5), ha='center', 
+                     fontsize=4.5, color="white", zorder=2, rotation=10)
+            plt.annotate("6", (ticks[0], ticks[1]),
+                     textcoords="offset points", xytext=(0,10), ha='center', 
+                     fontsize=20, weight="bold", color="white", zorder=2)
+            plt.annotate("CHRONOMETER", (ticks[0], ticks[1]),
+                     textcoords="offset points", xytext=(0,40), ha='center', 
+                     fontsize=6, color="white", zorder=2)
+            plt.annotate("MASTER CO-AXIAL", (ticks[0], ticks[1]),
+                     textcoords="offset points", xytext=(0,47), ha='center', 
+                     fontsize=6, color="white", zorder=2)
+        elif l == 1.5:
+            plt.scatter(ticks[0], ticks[1], color="#D5AE84", marker = ">", linewidth=5, zorder=2)
+            plt.annotate("9", (ticks[0], ticks[1]),
+                     textcoords="offset points", xytext=(15,-5), ha='center', 
+                     fontsize=20, weight="bold", color="white", zorder=2)
+        else:
+            plt.scatter(ticks[0], ticks[1], color="#D5AE84", zorder=2)
+    
+    circle = patches.Circle((0, 0), 1.5, facecolor='#050607')#,
+                    #edgecolor=(0, 0.8, 0.8), linewidth=3, alpha=0.5)
+    ax.add_patch(circle)
+            
+            
+
+    
+    plt.plot(sekX, sekY, color="#EAEAEA", zorder=3, linewidth=2)
+    plt.plot(minX, minY, color="#EAEAEA", zorder=3, linewidth=3)
+    plt.plot(stdX, stdY, color="#EAEAEA", zorder=3, linewidth=4)
+    plt.axis('off')    
+    plt.xlim(-1.7, 1.7)
+    plt.ylim(-1.7, 1.7)
+    plt.show()
+    #fig.savefig("OmegaSeamaster.pdf", bbox_inches='tight')
+
+
+
+
+def omegaSeamaster(stunde, minute, sekunde):
+    
+    i = sekunde*2/60
+    j = minute*2/60
+    k = stunde*2/12
+    init = np.concatenate((np.zeros((2,1)), np.array([0,1]).reshape(2,1)), axis=1)
+    
+    #for _ in range(1):
+    while True:
+        d_sek = i*math.pi
+        
+        
+        
+        sekunde = np.concatenate((np.zeros((2,1)), np.matmul(rotation(d_sek), 1.3*init[:,1]).reshape(2,1)), axis=1)
+        
+        if np.round(np.matmul(sekunde[:,1].T, np.array([1,0]).reshape(2,1)),5) == 0 and sekunde[1,1] > 0:
+            j += 2/60
+            
+        d_min = j*math.pi
+        
+        minute = np.concatenate((np.zeros((2,1)), np.matmul(rotation(d_min), 0.9*init[:,1]).reshape(2,1)), axis=1)
+        
+        
+        if np.round(np.matmul(sekunde[:,1].T, np.array([1,0]).reshape(2,1)),5) == 0 and sekunde[1,1] > 0 and np.round(np.matmul(minute[:,1].T, np.array([1,0]).reshape(2,1)),5) == 0 and minute[1,1] > 0:
+            k += 2/12
+            
+        d_std = k*math.pi
+            
+        stunde = np.concatenate((np.zeros((2,1)), np.matmul(rotation(d_std), 0.6*init[:,1]).reshape(2,1)), axis=1)
+    
+        
+        plot(sekunde[0], sekunde[1], minute[0], minute[1], stunde[0], stunde[1])
+        
+    
+        i += 2/60
+        t.sleep(0.95)
+        os.system("clear")
+    
+
+omegaSeamaster(9, 23, 47)
